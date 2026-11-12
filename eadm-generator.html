@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>E.Adm Generator — Estimated Benefits Administration Analysis</title>
+<style>
+/* PBGC Design System v1.1.0 DRAFT (tokens/tokens.json, commit 84a7149d, 2026-11-08). NOT approved. Dark theme: toggle in header; page background #000 (user override of provisional night-0 #0B1B36); provisional, COLA approval pending. Logos: official PBGC PNGs embedded as data URIs (see header). */
+:root{
+  --blue:#002D72; --red:#E4002B; --med-blue:#004B8D;
+  --ink:#1A1A1A; --gray-1:#58585B; --gray-2:#D2D2D2; --gray-3:#E0E0E0; --gray-4:#F2F2F2;
+  --error:#B3001B; --error-tint:#FDECEF; --warning:#8A5700; --warning-tint:#FFF4D6;
+  --success:#008065; --success-tint:#E6F2EF; --info-tint:#EAF0F8; --white:#FFFFFF;
+  --bg:#FFFFFF; --surface:#FFFFFF; --focus:#004B8D;
+  --font:"Helvetica Neue",Arial,sans-serif; --mono:Consolas,"Courier New",monospace;
+  --radius:4px;
+}
+:root[data-theme="dark"]{
+  --bg:#000000; --surface:#12294D; --focus:#FFFFFF;
+  --ink:#F2F2F2; --gray-1:#D2D2D2; --gray-2:#1B3866; --gray-3:#1B3866; --gray-4:#12294D;
+  --error:#FFB3BD; --error-tint:#12294D; --warning:#FFD27A; --warning-tint:#12294D;
+  --success:#B8D3A7; --success-tint:#12294D; --info-tint:#12294D; --med-blue:#BEC6DF;
+}
+:root[data-theme="dark"] body{background:#000000}
+:root[data-theme="dark"] .card{background:var(--surface)}
+:root[data-theme="dark"] input,:root[data-theme="dark"] select,:root[data-theme="dark"] textarea{background:var(--bg);border-color:#8B9FC7}
+:root[data-theme="dark"] .views{border-bottom-color:#1B3866}
+:root[data-theme="dark"] .nav-link{color:#BEC6DF}
+:root[data-theme="dark"] .nav-link[aria-current="page"]{border-bottom-color:#BEC6DF}
+:root[data-theme="dark"] .menu-toggle{color:#BEC6DF}
+:root[data-theme="dark"] button.primary{background:#BEC6DF;border-color:#BEC6DF;color:#002D72}
+:root[data-theme="dark"] button.primary:hover{background:#FFFFFF;border-color:#FFFFFF;color:#002D72}
+:root[data-theme="dark"] button.secondary{background:#0B1B36;border-color:#BEC6DF;color:#BEC6DF}
+:root[data-theme="dark"] button.secondary:hover{background:#12294D}
+:root[data-theme="dark"] button.danger{background:#FFB3BD;border-color:#FFB3BD;color:#4D000B}
+:root[data-theme="dark"] button.danger:hover{background:#FFFFFF;border-color:#FFFFFF;color:#4D000B}
+:root[data-theme="dark"] .stepper li.current{border-color:#BEC6DF}
+body{font-family:var(--font);color:var(--ink);background:var(--bg);margin:0;line-height:1.5;font-size:1rem}
+main{max-width:960px;margin:0 auto;padding:0 1rem 2rem}
+h1{font-size:1.5rem;line-height:1.25;margin:0}
+h2{font-size:1.25rem;line-height:1.3;margin:1.5rem 0 .5rem}
+h3{font-size:1.1rem;margin:1.25rem 0 .5rem}
+p{margin:.5rem 0}
+.small{font-size:.875rem;color:var(--gray-1)}
+.skip-link{position:absolute;left:1rem;top:-4rem;background:var(--white);color:var(--blue);padding:.5rem 1rem;border:2px solid var(--blue);border-radius:var(--radius);z-index:100;font-weight:700}
+.skip-link:focus{top:.5rem}
+.topbar{background:var(--blue);color:var(--white);padding:.5rem 0}
+.topbar h1{color:var(--white);font-size:1.25rem;line-height:1.25}
+.topbar .tag{color:var(--white);margin:0;font-size:.875rem}
+.topbar .wrap{max-width:960px;margin:0 auto;padding:0 1rem;display:flex;align-items:center;gap:.75rem}
+.topbar .logo{height:52px;width:auto;flex:none}
+.topbar .title{flex:1;min-width:0}
+.theme-toggle{flex:none;background:transparent;color:var(--white);border:2px solid var(--white)}
+.views{background:var(--bg);border-bottom:1px solid var(--gray-2)}
+.views .wrap{max-width:960px;margin:0 auto;padding:0 1rem;display:flex;align-items:center;gap:.25rem;flex-wrap:wrap}
+.nav-link{display:flex;align-items:center;min-height:44px;padding:.5rem .75rem;color:var(--blue);text-decoration:none}
+.nav-link:hover{text-decoration:underline}
+.nav-link[aria-current="page"]{font-weight:700;border-bottom:3px solid var(--blue)}
+.menu-toggle{display:none}
+button{font-family:var(--font);font-size:1rem;min-height:44px;padding:.5rem 1rem;border-radius:var(--radius);cursor:pointer}
+button.primary{background:var(--blue);color:var(--white);border:2px solid var(--blue)}
+button.primary:hover{background:var(--med-blue);border-color:var(--med-blue)}
+button.secondary{background:var(--white);color:var(--blue);border:2px solid var(--blue)}
+button.secondary:hover{background:var(--gray-4)}
+button.danger{background:var(--error);color:var(--white);border:2px solid var(--error)}
+button:disabled{opacity:.5;cursor:not-allowed}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+input,select,textarea{font-family:var(--font);font-size:1rem;color:var(--ink);background:var(--bg);border:1px solid var(--gray-1);border-radius:var(--radius);padding:.5rem;width:100%;margin:.25rem 0 .75rem}
+input[type="checkbox"],input[type="radio"]{width:auto;margin:0 .25rem 0 0}
+label{font-weight:700;display:block;margin-top:.5rem}
+label .opt{font-weight:400}
+.card{border:1px solid var(--gray-2);border-radius:var(--radius);padding:1rem;margin:1rem 0;background:var(--surface)}
+.stepper{list-style:none;display:flex;gap:.5rem;padding:0;margin:1rem 0;flex-wrap:wrap}
+.stepper li{flex:1;min-width:110px;border:1px solid var(--gray-2);border-radius:var(--radius);padding:.5rem;cursor:pointer}
+.stepper li.current{border:2px solid var(--blue)}
+.stepper li.done{border-color:var(--success);background:var(--success-tint)}
+.stepper li .n{font-weight:700}
+.alert{border:1px solid var(--error);background:var(--error-tint);border-radius:var(--radius);padding:.75rem;margin:.75rem 0}
+.warn{border:1px solid var(--warning);background:var(--warning-tint);border-radius:var(--radius);padding:.75rem;margin:.75rem 0}
+.info{border:1px solid var(--med-blue);background:var(--info-tint);border-radius:var(--radius);padding:.75rem;margin:.75rem 0}
+.ok{border:1px solid var(--success);background:var(--success-tint);border-radius:var(--radius);padding:.75rem;margin:.75rem 0}
+.badge{display:inline-block;padding:.1rem .5rem;border-radius:var(--radius);font-size:.875rem;font-weight:700}
+.badge.yes{background:var(--success-tint);color:var(--success)}
+.badge.no{background:var(--gray-4);color:var(--gray-1)}
+.badge.pending{background:var(--warning-tint);color:var(--warning)}
+.badge.approved{background:var(--success-tint);color:var(--success)}
+table{border-collapse:collapse;width:100%;margin:.75rem 0}
+th,td{border:1px solid var(--gray-2);padding:.5rem;text-align:left;vertical-align:top;font-size:.875rem}
+th{background:var(--gray-4);font-weight:700}
+tr:nth-child(even) td{background:var(--gray-4)}
+textarea{font-family:var(--mono);font-size:.875rem}
+footer{margin:2rem 0 1rem;border-top:1px solid var(--gray-2);padding-top:1rem}
+@media (max-width:640px){
+  .topbar .logo{height:44px}
+  .menu-toggle{display:inline-flex;align-items:center;min-height:44px;background:transparent;border:0;color:var(--blue);font-weight:700;padding:.5rem .75rem .5rem 0;cursor:pointer}
+  .views .wrap{flex-wrap:wrap}
+  .nav-link{display:none;width:100%}
+  .views.open .nav-link{display:flex}
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+<header class="topbar">
+  <div class="wrap">
+    <img class="logo" id="pbgc-logo" alt="Pension Benefit Guaranty Corporation" src="data:image/png;base64,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">
+    <div class="title">
+      <h1>E.Adm Generator</h1>
+      <p class="tag">Estimated Benefits Administration Analysis</p>
+    </div>
+    <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch theme">Dark</button>
+  </div>
+</header>
+<nav class="views" id="views" aria-label="Pages">
+  <div class="wrap">
+    <button class="menu-toggle" id="menu-toggle" type="button" aria-expanded="false" aria-controls="views">Menu</button>
+    <a class="nav-link" href="#eadm" data-view="eadm" aria-current="page">E.Adm generator</a>
+    <a class="nav-link" href="#welcome" data-view="welcome">Welcome</a>
+    <a class="nav-link" href="#help" data-view="help">Help</a>
+  </div>
+</nav>
+<main id="main">
+  <section id="view-eadm" data-view-page="eadm">
+    <ol class="stepper" id="stepper" aria-label="Workflow steps">
+      <li data-step="1" class="current"><span class="n">1</span> Case</li>
+      <li data-step="2"><span class="n">2</span> Prompt</li>
+      <li data-step="3"><span class="n">3</span> Upload JSON</li>
+      <li data-step="4"><span class="n">4</span> Review</li>
+      <li data-step="5"><span class="n">5</span> Download</li>
+    </ol>
+    <div id="step-1" class="step">
+      <h2>Step 1 — Case</h2>
+      <p>Header data for the memo. It comes from PBGC case records, not from plan documents.</p>
+      <div class="card">
+        <label for="f-toEbls">TO — EBLS name <span class="opt">(Employee Benefits Law Specialist)</span></label>
+        <input id="f-toEbls" type="text" autocomplete="off">
+        <label for="f-toFieldOffice">TO — Field office name and location</label>
+        <input id="f-toFieldOffice" type="text" autocomplete="off">
+        <label for="f-fromActuary">FROM — Actuary name</label>
+        <input id="f-fromActuary" type="text" autocomplete="off">
+        <label for="f-fromSection">FROM — ASD section <span class="opt">(e.g. D)</span></label>
+        <input id="f-fromSection" type="text" autocomplete="off">
+        <label for="f-fromContract">FROM — Contract actuary <span class="opt">(if any)</span></label>
+        <input id="f-fromContract" type="text" autocomplete="off">
+        <label for="f-fromFirm">FROM — Actuarial firm <span class="opt">(if any)</span></label>
+        <input id="f-fromFirm" type="text" autocomplete="off">
+        <label for="f-ccSupervisor">CC — Employee Benefits Supervisor</label>
+        <input id="f-ccSupervisor" type="text" autocomplete="off">
+        <label for="f-memoDate">DATE <span class="opt">(YYYY-MM-DD)</span></label>
+        <input id="f-memoDate" type="text" autocomplete="off" placeholder="YYYY-MM-DD">
+        <label for="f-caseNumber">PBGC Case Number <span class="opt">(text, leading zeros kept)</span></label>
+        <input id="f-caseNumber" type="text" autocomplete="off" inputmode="numeric">
+        <label for="f-planName">Plan Name</label>
+        <input id="f-planName" type="text" autocomplete="off">
+        <label for="f-bpd">Bankruptcy Petition Date (BPD) <span class="opt">(YYYY-MM-DD, blank if none)</span></label>
+        <input id="f-bpd" type="text" autocomplete="off" placeholder="YYYY-MM-DD">
+        <label for="f-dopt">Date of Plan Termination (DOPT) <span class="opt">(YYYY-MM-DD)</span></label>
+        <input id="f-dopt" type="text" autocomplete="off" placeholder="YYYY-MM-DD">
+        <label for="f-dotr">Date of Trusteeship (DOTR) <span class="opt">(YYYY-MM-DD)</span></label>
+        <input id="f-dotr" type="text" autocomplete="off" placeholder="YYYY-MM-DD">
+      </div>
+      <p><button type="button" class="primary" data-action="to-step-2">Next: prompt</button></p>
+    </div>
+    <div id="step-2" class="step" hidden>
+      <h2>Step 2 — Download the scraper prompt</h2>
+      <p>Feed the prompt and the documents to your LLM (Microsoft Copilot in the office, any LLM at home). The LLM returns a JSON proposal. It never writes the memo.</p>
+      <p><button type="button" class="primary" data-action="download-prompt">Download the scraper prompt</button></p>
+      <p class="small">Documents to attach: plan documents of all eras (5A/5B/5C), the R5 Preliminary Plan Summary (12D1), PF factor sets per era (12E1/12E2/12E3), participant data (SPECTRUM download from TRMD), the Earnings Offsets Summary if any (§6), the Employee Contributions Processing Evaluation (TP 36) if any (§7), and the Actuarial Case Memo EPRD language (§2). Do not attach the §436 Evaluation or the DEL — they are not E.Adm inputs.</p>
+      <p><button type="button" class="secondary" data-action="to-step-3">Next: upload JSON</button></p>
+    </div>
+    <div id="step-3" class="step" hidden>
+      <h2>Step 3 — Upload JSON</h2>
+      <p>Paste the JSON the LLM returned, or upload its file. The app validates it against the schema. Ambiguous or uncited answers are flagged, never auto-filled.</p>
+      <div id="upload-errors"></div>
+      <label for="json-input">JSON payload</label>
+      <textarea id="json-input" rows="12" placeholder='{"caseData": {...}, "sections": {...}}'></textarea>
+      <p>
+        <button type="button" class="primary" data-action="validate-json">Validate JSON</button>
+        <button type="button" class="secondary" data-action="upload-json-file">Upload JSON file</button>
+        <input type="file" id="json-file" accept=".json,application/json" hidden>
+        <button type="button" class="secondary" data-action="load-demo">Try the demo</button>
+      </p>
+      <div id="json-status"></div>
+      <p><button type="button" class="secondary" data-action="to-step-4" id="btn-to-step-4" disabled>Next: review</button></p>
+    </div>
+    <div id="step-4" class="step" hidden>
+      <h2>Step 4 — Review</h2>
+      <p>Check each section. Approve a section only when its answer and facts are right. Nothing generates until all 7 sections are approved.</p>
+      <div id="review-box"></div>
+      <p><button type="button" class="primary" data-action="to-step-5" id="btn-to-step-5" disabled>Next: download</button></p>
+    </div>
+    <div id="step-5" class="step" hidden>
+      <h2>Step 5 — Download</h2>
+      <div id="download-box"></div>
+    </div>
+  </section>
+  <section id="view-welcome" data-view-page="welcome" hidden>
+    <h2>Welcome</h2>
+    <p>The E.Adm Generator writes the Estimated Benefits Administration Analysis memo. It finds the issues that affect how benefits are administered, and who should be in pay.</p>
+    <p><strong>How it works, in 5 steps:</strong> case header · download the scraper prompt · feed the prompt and the documents to an LLM · upload the JSON the LLM returns · review each section · generate the Word memo.</p>
+    <p>The memo has 7 sections: Required Beginning Dates, Earliest PBGC Retirement Date, Retroactive QPSAs, Plan Adjustment Factors, Restrictions from another source, Earnings Offsets, Employee Contributions.</p>
+    <p>The LLM proposes. You review and approve. Only approved JSON writes the memo. The app never computes a benefit and never fetches PBGC systems — participant data comes from your upload.</p>
+    <p><button type="button" class="primary" data-action="try-demo">Try the demo</button></p>
+  </section>
+  <section id="view-help" data-view-page="help" hidden>
+    <h2>Help</h2>
+    <h3>What the memo is</h3>
+    <p>Template: <i>Estimated Benefits Administration Analysis Memo</i>, version of 09/18/2020. A plain memo to EBLS and the field office. Its purpose: to identify operating policies and issues that affect the administration of benefits under the plan.</p>
+    <h3>The 7 sections</h3>
+    <p><b>1. Required Beginning Dates.</b> Policy 5.2-5, TP 20.2. Any participants past or within 180 days of their RBD who are not yet in pay? If yes, document the findings and instruct EBLS or the field office to send applications commencing on the RBD.</p>
+    <p><b>2. Earliest PBGC Retirement Date (EPRD).</b> Policies 5.2-4 and 6.1-2. Four Yes/No questions: non-de minimis lump sums, annuities before age 55, early unreduced benefits, window periods. The EPRD language comes from the Actuarial Case Memo. Note: the template spells it “ERPD” in one line — that is the template’s typo, kept as written.</p>
+    <p><b>3. Retroactive QPSAs.</b> Policies 5.2-4 and 5.7-2. Any beneficiaries entitled to QPSAs with annuity starting dates retroactive to dates before DOPT? If yes, document and instruct EBLS or the field office to send applications commencing retroactively.</p>
+    <p><b>4. Plan Adjustment Factors.</b> Did earlier plan documents provide different Early Retirement, Late Retirement, or Form Conversion Factors than the DOPT document? If yes, document the effective dates and the IPS location, and apply the appropriate factors.</p>
+    <p><b>5. Restrictions from another source.</b> Does the plan restrict benefits payable while participants receive certain benefits from another source? If yes, describe the provisions and give guidance for benefit payments.</p>
+    <p><b>6. Earnings Offsets.</b> Policy 6.2-1, TP 51. Any benefit supplements subject to earnings offsets? If yes, attach or reference the Earnings Offsets Summary. Note: PBGC does <b>not</b> apply earnings offsets in estimated benefits — this section only identifies the supplements.</p>
+    <p><b>7. Employee Contributions.</b> Policies 5.11-1 and 5.11-2, TP 36. If the plan has employee contributions, an Employee Contributions Processing Evaluation (TP 36) must be completed. Select the statements that apply; the rest are deleted.</p>
+    <h3>What the app does not do</h3>
+    <p>It does not compute RBDs, EPRDs, or benefit amounts. It does not fetch SPECTRUM, QuEST, or TRMD data. It does not ask for the §436 Evaluation or the DEL — they are not E.Adm inputs. Participant names and SSNs never go in the JSON; use participant refs only.</p>
+    <h3>After the memo</h3>
+    <p>Image the finished memo in Image Viewer, Index 9C. Notify the Auditor, EBLS, and FBA. Submit to the Actuarial Reviewer.</p>
+  </section>
+  <footer>
+    <p class="small">E.Adm Generator v0.1.0. Template: Estimated Benefits Administration Analysis Memo, version of 09/18/2020. PBGC Design System v1.1.0 DRAFT. Synthetic data only.</p>
+  </footer>
+</main>
+<script>
+"use strict";
+/* E.Adm Generator v0.1.0 — single-file app.
+   Template: Estimated Benefits Administration Analysis Memo, version of
+   09/18/2020 (Drive ID 1T7ykIAWWH3DkrtJB0mSzBV2CGwNZy5MH). Plain memo, no
+   [[tags]]: the app reproduces the template structure exactly and fills
+   the blanks from approved JSON. Fixed template text below is the
+   template's own words, verbatim (including the "ERPD" typo in §2,
+   noted in Help and OPEN_ITEMS). */
+var EADM_VERSION = "0.1.0";
+var EADM_SCHEMA_VERSION = "1.0.0";
+var EADM_TEMPLATE_VERSION = "09/18/2020";
+
+/* PROMPT-START */
+var EADM_SCRAPER_PROMPT = "# E.Adm \u2014 Estimated Benefits Administration Analysis Scraper Prompt\n\nUse this prompt with an LLM of your choice. Attach the plan documents\n**and** the other associated documents \u2014 plan document, amendments,\nrestatements, union contracts, the R5 Preliminary Plan Summary, the PF\nfactor sets per era, participant data (SPECTRUM download from TRMD),\nthe Earnings Offsets Summary if any, the Employee Contributions\nProcessing Evaluation (TP 36) if any, and the Actuarial Case Memo\nEPRD language \u2014 together with this prompt. The LLM must return **only**\nthe JSON payload described below. That JSON is a *proposal*: it is fed\nback into the E.Adm Generator app, validated against\n`schema/eadm.schema.json`, reviewed by a human section by section, and\nonly approved JSON is used to write the Estimated Benefits\nAdministration Analysis memo. The LLM never fills the memo and never\ndecides an ambiguous answer on its own.\n\nDo **not** attach the \u00a7436 Evaluation or the DEL. They are not E.Adm\ninputs.\n\n## Your task\n\nYou are preparing the Estimated Benefits Administration Analysis memo\nfor a terminated defined-benefit pension plan. For each of the 7\nsections below, find the answer in the documents, state the facts and\ncircumstances, and give the citation (document, section, page) where\neach answer comes from. Return the answers as JSON matching the schema\nin `schema/eadm.schema.json` (also summarised in \"Output format\"\nbelow).\n\n## Rules\n\n- **Summarise, do not copy verbatim \u2014 ASD STE 100 minimal style.**\n  Every facts text must be the **smallest string that conveys the\n  meaning**: a noun phrase or short clause, never a full paragraph,\n  one idea per line. Keep ages, service years, percentages, dollar\n  amounts, and dates **exact**. Standard abbreviations: `yr`/`yrs`,\n  `mo`, `hrs`, `%`, `\u00a7`, `excl.`, `equiv.`, `avg comp`, `svc`\n  (service). If stripping verbiage would lose meaning (a condition,\n  an exception, a date), keep the longer form and say why in `note`.\n  A longer value that is still true beats a minimal value that is\n  wrong.\n- **One entry per section.** Every one of the 7 sections must be\n  present in `sections`. Do not omit a section.\n- **Yes/No answers.** Sections 1, 3, 4, 5, 6 take `yes` or `no`.\n  Section 2 takes `yes` or `no` for each of its four questions.\n  Section 7 takes one selection: `none`, `mecPermitted`,\n  `mecNotPermitted`, `vec`, or `other`.\n- **Citation for every answer**: document name, page number, and plan\n  section number in the JSON `citation` object. No citation, no\n  answer. The app renders it as a minimal code, e.g. `D1 \u00a72.1 p3`\n  (D1 = first document, \u00a7 = plan section, p = page) \u2014 the full\n  document name lives once in the sources list, never repeated in a\n  cell.\n- **Participant refs, never names or SSNs.** For \u00a71 and \u00a73 lists, use\n  the participant reference from the SPECTRUM data (e.g. `P-001`),\n  never a name, SSN, or address. The memo instructs EBLS to send\n  applications; the actuary adds names in the final memo if needed.\n- **Dates are ISO format `YYYY-MM-DD`. Case number is text, with\n  leading zeros preserved (never a number).**\n- **Do not guess.** A missing or ambiguous answer is a correct\n  answer. A guessed value is an error. If you cannot find an answer,\n  set the section to `no` with facts \"Not found in the documents\n  provided\" and say so in `note` \u2014 do not invent a provision.\n- **Never return a full masked value** (no full SSN, no full account\n  number).\n\n## Section 1 \u2014 Required Beginning Dates (Policy 5.2-5, TP 20.2)\n\nRule: the RBD for participants (other than 5% owners) is April 1 of\nthe calendar year following the later of (1) the calendar year the\nparticipant attains age 70.5 (born on or before June 30, 1949) or 72\n(born after June 30, 1949), and (2) the calendar year the participant\nseparates from service. Different rules apply to QPSA beneficiaries\nand alternate payees under QDROs.\n\nQuestion: are there any participants who are past or within 180 days\nof their required beginning dates but who are not yet in pay?\n\n- If yes: list each participant (ref, RBD, past or within 180 days,\n  note) and state the facts.\n- If no: state the facts and circumstances (e.g. all participants\n  past RBD are already in pay).\n\n## Section 2 \u2014 Earliest PBGC Retirement Date, EPRD (Policies 5.2-4, 6.1-2)\n\nRule: if the participant's Earliest Annuity Date is on or after the\ndate the participant reaches age 55, the EPRD is Earliest Annuity\nDate. If it is before age 55, the EPRD is the date the participant\nreaches age 55, unless PBGC decides, under a facts-and-circumstances\ntest, that the participant could retire earlier.\n\nAnswer the four questions, yes or no each:\n\n1. Does the plan offer non-de minimis lump sums at termination of\n   employment?\n2. Does the plan provide annuities prior to age 55?\n3. Does plan allow for Early Unreduced Benefits?\n4. Does this plan contain \"window\" periods? (If yes, contact Ask PPD\n   for guidance.)\n\n`eprdLanguage`: copy the standard EPRD language from the Actuarial\nCase Memo, verbatim. Do not write your own EPRD language. If the Case\nMemo has no EPRD language, say so in `note` and leave\n`eprdLanguage` empty \u2014 the actuary will add it.\n\n## Section 3 \u2014 Retroactive QPSAs (Policies 5.2-4, 5.7-2)\n\nRule: a QPSA may be paid retroactively to the later of the\nparticipant's EPRD and the first day of the month following the month\nof the participant's death, if the application is received within 90\ndays from the date of the letter sending the application to the\nsurviving spouse. If the participant died before DOPT and the spouse\nwas not previously notified of entitlement to a QPSA benefit, the\nspouse may be due a retroactive QPSA payable as a pre-termination\nliability. If PBGC decided the spouse was previously offered the\nchance to commence QPSA benefits and deferred, the spouse is not\neligible for a retroactive annuity.\n\nQuestion: are there any beneficiaries entitled to QPSAs with annuity\nstarting dates retroactive to dates prior to DOPT?\n\n- If yes: list each QPSA (ref, death date, EPRD, retroactive to,\n  note) and state the facts.\n- If no: state the facts and circumstances.\n\n## Section 4 \u2014 Review of Plan Adjustment Factors\n\nQuestion: did earlier plan documents provide different Early\nRetirement, Late Retirement, or Form Conversion Factors than the DOPT\nplan document?\n\n- If yes: list each earlier factor set (era, effective dates,\n  description of the difference, IPS location) and state the facts.\n  Use the PF factor sets per era where available.\n- If no: state the facts and circumstances.\n\n## Section 5 \u2014 Restrictions from another source\n\nQuestion: does the plan restrict benefits payable while participants\nare receiving certain benefits from another source?\n\n- If yes: describe the provisions briefly and give guidance for\n  benefit payments (e.g. a disability benefit from another plan that\n  blocks early retirement, or an offset). State the facts.\n- If no: state the facts and circumstances.\n\n## Section 6 \u2014 Benefit Supplements Subject to Earnings Offsets (Policy 6.2-1, TP 51)\n\nRule: a plan may reduce a participant's temporary supplement based on\nearnings.\n\nQuestion: are there benefit supplements that are subject to earnings\noffsets?\n\n- If yes: give the reference to the Earnings Offsets Summary\n  (attached or IPS location). Do not compute any offset amount \u2014\n  PBGC does not apply earnings offsets in estimated benefits.\n- If no: answer `no`.\n\n## Section 7 \u2014 Employee Contributions (Policies 5.11-1, 5.11-2, TP 36)\n\nIf the plan has no employee contributions, select `none`.\n\nIf the plan has employee contributions, select one:\n\n- `mecPermitted` \u2014 mandatory employee contribution (MEC), and the\n  AMEC may be withdrawn in a single sum as provided in Policy 5.11-2.\n- `mecNotPermitted` \u2014 MEC, and the AMEC may not be withdrawn in a\n  single sum as provided in Policy 5.11-2.\n- `vec` \u2014 voluntary employee contributions (VEC). See the attached\n  guidance from PPD and/or OGC.\n- `other` \u2014 give the details in `otherDetails`.\n\nFor MEC, give the reference to the Employee Contributions Processing\nEvaluation (TP 36) in `evaluationRef`. The evaluation itself must be\ncompleted; do not summarise it from the plan document alone.\n\n## Output format\n\nReturn **only** valid JSON, no markdown fences, no commentary, no\nexplanation. The JSON must have exactly these top-level keys:\n\n```json\n{\n  \"caseData\": {\n    \"toEbls\": \"string or null\",\n    \"toFieldOffice\": \"string or null\",\n    \"fromActuary\": \"string or null\",\n    \"fromSection\": \"string or null\",\n    \"fromContractActuary\": \"string or null\",\n    \"fromFirm\": \"string or null\",\n    \"ccSupervisor\": \"string or null\",\n    \"memoDate\": \"YYYY-MM-DD\",\n    \"caseNumber\": \"string (text, leading zeros preserved)\",\n    \"planName\": \"string\",\n    \"bpd\": \"YYYY-MM-DD or null\",\n    \"dopt\": \"YYYY-MM-DD\",\n    \"dotr\": \"YYYY-MM-DD or null\"\n  },\n  \"sections\": {\n    \"s1\": {\n      \"answer\": \"yes | no\",\n      \"facts\": \"string\",\n      \"participants\": [\n        { \"ref\": \"string\", \"rbd\": \"YYYY-MM-DD\", \"status\": \"past | within180\", \"note\": \"string or null\" }\n      ],\n      \"citation\": { \"document\": \"string\", \"page\": \"string or number or null\", \"section\": \"string or null\" },\n      \"note\": \"string or null\"\n    },\n    \"s2\": {\n      \"lumpSums\": \"yes | no\",\n      \"annuitiesBefore55\": \"yes | no\",\n      \"earlyUnreduced\": \"yes | no\",\n      \"windowPeriods\": \"yes | no\",\n      \"eprdLanguage\": \"string\",\n      \"citation\": { \"document\": \"string\", \"page\": \"string or number or null\", \"section\": \"string or null\" },\n      \"note\": \"string or null\"\n    },\n    \"s3\": {\n      \"answer\": \"yes | no\",\n      \"facts\": \"string\",\n      \"qpsas\": [\n        { \"ref\": \"string\", \"deathDate\": \"YYYY-MM-DD or null\", \"eprd\": \"YYYY-MM-DD or null\", \"retroactiveTo\": \"YYYY-MM-DD or null\", \"note\": \"string or null\" }\n      ],\n      \"citation\": { \"document\": \"string\", \"page\": \"string or number or null\", \"section\": \"string or null\" },\n      \"note\": \"string or null\"\n    },\n    \"s4\": {\n      \"answer\": \"yes | no\",\n      \"facts\": \"string\",\n      \"earlierSets\": [\n        { \"era\": \"string\", \"effectiveDates\": \"string\", \"description\": \"string\", \"ipsLocation\": \"string\" }\n      ],\n      \"citation\": { \"document\": \"string\", \"page\": \"string or number or null\", \"section\": \"string or null\" },\n      \"note\": \"string or null\"\n    },\n    \"s5\": {\n      \"answer\": \"yes | no\",\n      \"facts\": \"string\",\n      \"guidance\": \"string or null\",\n      \"citation\": { \"document\": \"string\", \"page\": \"string or number or null\", \"section\": \"string or null\" },\n      \"note\": \"string or null\"\n    },\n    \"s6\": {\n      \"answer\": \"yes | no\",\n      \"summaryRef\": \"string or null\",\n      \"citation\": { \"document\": \"string\", \"page\": \"string or number or null\", \"section\": \"string or null\" },\n      \"note\": \"string or null\"\n    },\n    \"s7\": {\n      \"selection\": \"none | mecPermitted | mecNotPermitted | vec | other\",\n      \"otherDetails\": \"string or null\",\n      \"evaluationRef\": \"string or null\",\n      \"citation\": { \"document\": \"string\", \"page\": \"string or number or null\", \"section\": \"string or null\" },\n      \"note\": \"string or null\"\n    }\n  },\n  \"sources\": [\n    { \"name\": \"string\", \"format\": \"H | E | null\", \"used\": \"U | NU | null\" }\n  ]\n}\n```\n\nEvery one of the 7 sections must be present in `sections`. `sources`\nlists every document you used, with format H (hard copy) or E\n(electronic) and whether it was used (U) or not (NU).\n\n## Workflow reminder (for the human, not the LLM)\n\n1. Download this prompt from the E.Adm Generator app.\n2. Feed the plan documents and associated documents + this prompt to\n   your LLM (Microsoft Copilot in the office, any LLM at home).\n3. Take the JSON the LLM returns and upload / paste it back into the\n   E.Adm Generator app.\n4. The app validates the JSON against the schema, flags missing /\n   ambiguous / uncited items, and you review and approve each section.\n5. Only approved JSON writes the filled memo Word document.\n";
+/* PROMPT-END */
+
+/* ---------- template text (verbatim) ---------- */
+var EADM_PURPOSE = "To identify operating policies and issues that affect the administration of benefits under the plan.";
+var EADM_SECTIONS = [
+  { id: "s1", title: "1. Required Beginning Dates", refs: ["Policy 5.2-5 Required Beginning Dates", "TP 20.2 Solicit Benefit Application"] },
+  { id: "s2", title: "2. Earliest PBGC Retirement Date (EPRD)", refs: ["Policy 5.2-4: Annuity Starting Dates", "Policy 6.1-2 Earliest PBGC Retirement Date"] },
+  { id: "s3", title: "3. Retroactive Qualified Preretirement Survivor Annuities (QPSAs)", refs: ["Policy 5.2-4 Annuity Starting Dates", "Policy 5.7-2 Payment of Qualified Preretirement Survivor Annuities in Plans Terminating on and after August 23, 1984"] },
+  { id: "s4", title: "4. Review of Plan Adjustment Factors", refs: [] },
+  { id: "s5", title: "5. Restrictions on benefits payable while participants are receiving certain benefits from another source", refs: [] },
+  { id: "s6", title: "6. Benefit Supplements Subject to Earnings Offsets", refs: ["Policy 6.2-1 Application of Earnings Offset Provisions", "TP 51 Earnings Offsets"] },
+  { id: "s7", title: "7. Employee Contributions", refs: [] }
+];
+var EADM_S1_RULE = [
+  "Most plans provide that the required beginning date (RBD) for participants (other than 5% owners) is April 1 of the calendar year following the later of (1) the calendar year in which the participant attains age 70\u00BD (for participants born on or before June 30, 1949) or 72 (for participants born after June 30, 1949), and (2) the calendar year in which the participant separates from service. Different rules also apply to QPSA beneficiaries and alternate payees under QDROs. Refer to the plan\u2019s provisions and Policy 5.2-5 Required Beginning Dates to determine the required beginning dates for your plan.",
+  "The RBD is the latest permissible annuity starting date under Policy 5.2-4: Annuity Starting Dates. This determination is significant because PBGC will pay retroactive benefits to payees who apply for benefits after the RBD.",
+  "TP 20.2 Solicit Benefit Application instructs the case processing team to identify participants who are not yet in pay and are within 180 days of their RBD and send them applications for benefits. This procedure is to be performed once a month."
+];
+var EADM_S1_Q = "Are there any participants who are past or within 180 days of their required beginning dates but who are not yet in pay?";
+var EADM_S1_YES = "Yes: Document your findings and image in IPS. Instruct EBLS and/or field office to send participants applications for benefits commencing on their required beginning date per TP 20 Solicit Benefit Application.";
+var EADM_S2_RULE = [
+  "Earliest PBGC Retirement Date (EPRD) is the earliest date on which the participant can \u201Cretire\u201D based on the following conditions:",
+  "If the participant's Earliest Annuity Date (earliest date under plan provisions on which the participant could separate from service with the right to receive an immediate annuity) is on or after the date the participant reaches age 55, the EPRD is Earliest Annuity Date.",
+  "If the participant's Earliest Annuity Date is before the date the participant reaches age 55, the EPRD is the date the participant reaches age 55, unless PBGC determines, under a facts-and-circumstances test, that the participant could retire on an earlier date."
+];
+var EADM_S2_QS = [
+  { id: "lumpSums", q: "Does the plan offer non-de minimis lump sums at termination of employment?" },
+  { id: "annuitiesBefore55", q: "Does the plan provide annuities prior to age 55?" },
+  { id: "earlyUnreduced", q: "Does plan allow for Early Unreduced Benefits?" },
+  { id: "windowPeriods", q: "Does this plan contain \u201Cwindow\u201D periods? If yes, contact Ask PPD for guidance." }
+];
+var EADM_S2_ACTION = "Use the standard ERPD language used in the Actuarial Case Memo for this section.";
+var EADM_S3_RULE = "A Qualified Preretirement Survivor Annuity (QPSA) may be paid retroactively to the later of the participant\u2019s EPRD and the first day of the month following the month of the participant\u2019s death, if the application for PBGC benefits is received within 90 days from the date of the letter sending the application to the surviving spouse. If the participant died before DOPT and the spouse was not previously notified of his/her entitlement to a QPSA benefit, the spouse may be due a retroactive QPSA payable as a pre-termination liability. (If PBGC determines that the surviving spouse was previously offered the opportunity to commence QPSA benefits and deferred, the surviving spouse is not eligible for a retroactive annuity.)";
+var EADM_S3_Q = "Are there any beneficiaries entitled to QPSAs with annuity starting dates retroactive to dates prior to DOPT?";
+var EADM_S3_YES = "Yes: Document the findings and image to the plan file in IPS. Instruct the EBLS and/or field office to send the affected beneficiaries applications for benefits commencing retroactively to the later of the participant\u2019s EPRD and the first day of the month following the month of the participant\u2019s death.";
+var EADM_S4_Q = "Did earlier plan documents provide different Early Retirement, Late Retirement, or Form Conversion Factors than the DOPT plan document?";
+var EADM_S4_YES = "Yes: Document the effective dates of the earlier provisions (for example, in the Plan Summary). Briefly describe below and state location of documentation in IPS. Apply the appropriate factors for estimated benefit calculations.";
+var EADM_S5_EXAMPLE = "Review plan provisions to determine if there are any restrictions on the payable benefits while the participant is receiving certain benefits from another source. For example, Company XYZ sponsored Plan(A) - Defined Benefit Plan and Plan(B) \u2013 Disability Plan. PBGC became trustee of Plan A. Participants could not retire early from Plan(A) if they were receiving a disability benefit from Plan(B). However, at age 60, Plan(A) provided that a participant could retire even if the participant were receiving a disability benefit from Plan(B), however the benefit in Plan(B) is offset by the benefit being paid in Plan(A).";
+var EADM_S5_Q = "Does the plan restrict benefits payable while participants are receiving certain benefits from another source?";
+var EADM_S5_DESCRIBE = "Briefly describe such plan provisions and provide guidance for benefit payments.";
+var EADM_S6_RULE = "A pension plan may provide that it will reduce a participant\u2019s temporary supplement based on the participant\u2019s earnings. The above referenced procedures and policy provide guidance on how to administer this provision.";
+var EADM_S6_Q = "Are there benefit supplements that are subject to earnings offsets?";
+var EADM_S6_YES = "If yes, attach or reference the Earnings Offsets Summary.";
+var EADM_S7_GUIDANCE = [
+  "Guidance: All or part of a benefit may be derived from employee contributions (EEC). If a plan has EEC, plan provisions and other records must be evaluated to determine the impact of the EEC on the calculation, valuation and payment of benefits, including whether withdrawal of the EEC in a single sum is permitted under Policy 5.11-2 Payment of Priority Category 2 Benefits.",
+  "If the plan does not have EEC, document below that the plan does not have EEC.",
+  "If a plan has EEC, an Employee Contributions Processing Evaluation must be completed, as instructed in TP 36 Employee Contributions, and the results summarized or referenced below. AMEC may not otherwise be withdrawn in a single sum until it is noted below that such a withdrawal is permitted under Policy 5.11-2.",
+  "Additional Reference: Policy 5.11-1 Calculation and Payment of Priority Category 2 Benefits in PBGC-Trusteed Plan",
+  "Impact of EEC on Plan Administration (select the statements that apply and delete those that do not)"
+];
+var EADM_S7_STATEMENTS = {
+  none: "N/A. The plan does not include employee contributions.",
+  mecPermitted: "The plan has mandatory employee contribution (MEC). The AMEC may be withdrawn in a single sum as provided in Policy 5.11-2. See the Employee Contributions Processing Evaluation for additional information about the MEC.",
+  mecNotPermitted: "The plan has mandatory employee contribution (MEC). The AMEC may not be withdrawn in a single sum as provided in Policy 5.11-2. See the Employee Contributions Processing Evaluation for additional information about the MEC.",
+  vec: "The plan has voluntary employee contributions (VEC). See the attached guidance from PPD and/or OGC.",
+  other: "Other pertinent details: "
+};
+
+/* ---------- safe storage (opaque origin: file: URL localStorage throws) ---------- */
+function eadmSafeStorage(){
+  try {
+    var t = window.localStorage;
+    t.getItem("__eadm_test__");
+    return t;
+  } catch (e) { return null; }
+}
+var EADM_THEME_KEY = "eadm-theme";
+function eadmLoadTheme(){
+  var st = eadmSafeStorage();
+  var v = st ? st.getItem(EADM_THEME_KEY) : null;
+  return v === "dark" ? "dark" : "light";
+}
+function eadmSaveTheme(theme){
+  var st = eadmSafeStorage();
+  if(st){ try { st.setItem(EADM_THEME_KEY, theme); } catch (e) {} }
+}
+function eadmApplyTheme(theme){
+  document.documentElement.setAttribute("data-theme", theme);
+  var b = document.getElementById("theme-toggle");
+  if(b) b.textContent = theme === "dark" ? "Light" : "Dark";
+}
+function eadmToggleTheme(){
+  /* Derive the next theme from the live data-theme attribute, not from
+     storage: on an opaque origin (file: URL) storage is blocked and
+     always reads back "light", which would pin the toggle on dark. */
+  var cur = document.documentElement.getAttribute("data-theme") || "light";
+  var next = cur === "dark" ? "light" : "dark";
+  eadmSaveTheme(next);
+  eadmApplyTheme(next);
+}
+
+/* ---------- state + audit ---------- */
+var EADM_STATE = { caseData: {}, sections: null, approved: {}, audit: [], step: 1, validated: false, generated: null };
+function eadmEl(id){ return document.getElementById(id); }
+function eadmAudit(msg){
+  var line = new Date().toISOString() + "  " + msg;
+  EADM_STATE.audit.push(line);
+}
+function eadmNowISO(){ return new Date().toISOString().slice(0, 10); }
+
+/* ---------- helpers ---------- */
+function eadmEscXml(s){
+  if(s === null || s === undefined) return "";
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+function eadmIsISO(s){
+  return typeof s === "string" && /^\d{4}-\d{2}-\d{2}$/.test(s) && !isNaN(Date.parse(s));
+}
+function eadmFmtMDY(iso){
+  if(!eadmIsISO(iso)) return iso || "";
+  var p = iso.split("-");
+  return p[1] + "/" + p[2] + "/" + p[0];
+}
+function eadmTrim(s){ return (s === null || s === undefined) ? "" : String(s).trim(); }
+
+/* ---------- validation ---------- */
+function eadmValidate(data){
+  var errors = [], warnings = [];
+  if(!data || typeof data !== "object") return { ok: false, errors: ["Not a JSON object."], warnings: [] };
+  var c = data.caseData || {};
+  if(!eadmTrim(c.caseNumber)) errors.push("caseData.caseNumber is required (text, leading zeros kept).");
+  if(!eadmTrim(c.planName)) errors.push("caseData.planName is required.");
+  if(!eadmIsISO(c.dopt)) errors.push("caseData.dopt must be a date YYYY-MM-DD.");
+  if(!eadmIsISO(c.memoDate)) errors.push("caseData.memoDate must be a date YYYY-MM-DD.");
+  if(c.bpd && !eadmIsISO(c.bpd)) errors.push("caseData.bpd must be a date YYYY-MM-DD or empty.");
+  if(c.dotr && !eadmIsISO(c.dotr)) errors.push("caseData.dotr must be a date YYYY-MM-DD or empty.");
+  var s = data.sections || {};
+  /* §1 */
+  if(!s.s1 || (s.s1.answer !== "yes" && s.s1.answer !== "no")) errors.push("s1.answer must be yes or no.");
+  else {
+    if(!eadmTrim(s.s1.facts)) errors.push("s1.facts is required (state facts and circumstances).");
+    if(s.s1.answer === "yes"){
+      if(!Array.isArray(s.s1.participants) || s.s1.participants.length === 0) errors.push("s1.answer is yes but s1.participants is empty.");
+      else s.s1.participants.forEach(function(p, i){
+        if(!eadmTrim(p.ref)) errors.push("s1.participants[" + i + "].ref is required.");
+        if(!eadmIsISO(p.rbd)) errors.push("s1.participants[" + i + "].rbd must be a date YYYY-MM-DD.");
+        if(p.status !== "past" && p.status !== "within180") errors.push("s1.participants[" + i + "].status must be past or within180.");
+      });
+    }
+  }
+  /* §2 */
+  if(!s.s2) errors.push("s2 is required.");
+  else {
+    EADM_S2_QS.forEach(function(q){
+      if(s.s2[q.id] !== "yes" && s.s2[q.id] !== "no") errors.push("s2." + q.id + " must be yes or no.");
+    });
+    if(!eadmTrim(s.s2.eprdLanguage)) errors.push("s2.eprdLanguage is required (standard language from the Actuarial Case Memo).");
+    if(s.s2.windowPeriods === "yes") warnings.push("s2.windowPeriods is yes: contact Ask PPD for guidance (template).");
+  }
+  /* §3 */
+  if(!s.s3 || (s.s3.answer !== "yes" && s.s3.answer !== "no")) errors.push("s3.answer must be yes or no.");
+  else {
+    if(!eadmTrim(s.s3.facts)) errors.push("s3.facts is required (state facts and circumstances).");
+    if(s.s3.answer === "yes"){
+      if(!Array.isArray(s.s3.qpsas) || s.s3.qpsas.length === 0) errors.push("s3.answer is yes but s3.qpsas is empty.");
+      else s.s3.qpsas.forEach(function(q, i){
+        if(!eadmTrim(q.ref)) errors.push("s3.qpsas[" + i + "].ref is required.");
+        if(q.deathDate && !eadmIsISO(q.deathDate)) errors.push("s3.qpsas[" + i + "].deathDate must be a date YYYY-MM-DD or empty.");
+        if(q.eprd && !eadmIsISO(q.eprd)) errors.push("s3.qpsas[" + i + "].eprd must be a date YYYY-MM-DD or empty.");
+      });
+    }
+  }
+  /* §4 */
+  if(!s.s4 || (s.s4.answer !== "yes" && s.s4.answer !== "no")) errors.push("s4.answer must be yes or no.");
+  else {
+    if(!eadmTrim(s.s4.facts)) errors.push("s4.facts is required (state facts and circumstances).");
+    if(s.s4.answer === "yes"){
+      if(!Array.isArray(s.s4.earlierSets) || s.s4.earlierSets.length === 0) errors.push("s4.answer is yes but s.s4.earlierSets is empty.");
+      else s.s4.earlierSets.forEach(function(f, i){
+        if(!eadmTrim(f.era)) errors.push("s4.earlierSets[" + i + "].era is required.");
+        if(!eadmTrim(f.effectiveDates)) errors.push("s4.earlierSets[" + i + "].effectiveDates is required.");
+        if(!eadmTrim(f.description)) errors.push("s4.earlierSets[" + i + "].description is required.");
+        if(!eadmTrim(f.ipsLocation)) errors.push("s4.earlierSets[" + i + "].ipsLocation is required.");
+      });
+    }
+  }
+  /* §5 */
+  if(!s.s5 || (s.s5.answer !== "yes" && s.s5.answer !== "no")) errors.push("s5.answer must be yes or no.");
+  else {
+    if(!eadmTrim(s.s5.facts)) errors.push("s5.facts is required (state facts and circumstances).");
+    if(s.s5.answer === "yes" && !eadmTrim(s.s5.guidance)) errors.push("s5.answer is yes but s5.guidance is empty (describe the provisions and give guidance for benefit payments).");
+  }
+  /* §6 */
+  if(!s.s6 || (s.s6.answer !== "yes" && s.s6.answer !== "no")) errors.push("s6.answer must be yes or no.");
+  else if(s.s6.answer === "yes"){
+    if(!eadmTrim(s.s6.summaryRef)) errors.push("s6.answer is yes but s6.summaryRef is empty (attach or reference the Earnings Offsets Summary).");
+    warnings.push("s6 is yes: PBGC does not apply earnings offsets in estimated benefits (Policy 6.2-1 §B) — this section only identifies the supplements.");
+  }
+  /* §7 */
+  if(!s.s7 || ["none","mecPermitted","mecNotPermitted","vec","other"].indexOf(s.s7.selection) < 0) errors.push("s7.selection must be none, mecPermitted, mecNotPermitted, vec, or other.");
+  else {
+    if(s.s7.selection === "other" && !eadmTrim(s.s7.otherDetails)) errors.push("s7.selection is other but s7.otherDetails is empty.");
+    if((s.s7.selection === "mecPermitted" || s.s7.selection === "mecNotPermitted") && !eadmTrim(s.s7.evaluationRef)) errors.push("s7.selection is MEC but s7.evaluationRef is empty (Employee Contributions Processing Evaluation, TP 36).");
+    if(s.s7.selection === "vec") warnings.push("s7.selection is VEC: see the attached guidance from PPD and/or OGC (template).");
+  }
+  return { ok: errors.length === 0, errors: errors, warnings: warnings };
+}
+
+/* ---------- synthetic demo (NOT a real case) ---------- */
+var EADM_DEMO_JSON = {
+  caseData: {
+    toEbls: "A. Example", toFieldOffice: "Washington Field Office, Washington, DC",
+    fromActuary: "J. Sample", fromSection: "D", fromContractActuary: "", fromFirm: "",
+    ccSupervisor: "M. Reviewer", memoDate: "2026-11-11", caseNumber: "12345678",
+    planName: "Harborview Manufacturing Pension Plan", bpd: "", dopt: "2024-06-30", dotr: "2024-09-15"
+  },
+  sections: {
+    s1: { answer: "yes", facts: "Two participants past or within 180 days of RBD and not yet in pay. Applications to be sent per TP 20.2.",
+      participants: [
+        { ref: "P-001", rbd: "2025-04-01", status: "past", note: "Past RBD, not yet in pay." },
+        { ref: "P-002", rbd: "2026-04-01", status: "within180", note: "Within 180 days of RBD." }
+      ] },
+    s2: { lumpSums: "no", annuitiesBefore55: "yes", earlyUnreduced: "no", windowPeriods: "no",
+      eprdLanguage: "The earliest PBGC retirement date is the participant\u2019s earliest annuity date where that date is on or after age 55; otherwise age 55, unless the facts-and-circumstances test supports an earlier date." },
+    s3: { answer: "no", facts: "No beneficiaries entitled to retroactive QPSAs. No participant died before DOPT with an unnotified spouse.", qpsas: [] },
+    s4: { answer: "yes", facts: "The 1979 plan provided different early retirement factors than the DOPT document.",
+      earlierSets: [
+        { era: "1979 plan", effectiveDates: "1979-01-01 to 2010-12-31", description: "ERF 1/180 per month first 60 months, then 1/360; DOPT document uses 1/15 per year.", ipsLocation: "IPS 9C #12340001" }
+      ] },
+    s5: { answer: "no", facts: "No restriction on benefits payable while receiving benefits from another source was found in the plan documents.", guidance: "" },
+    s6: { answer: "yes", summaryRef: "Earnings Offsets Summary, IPS 9C #12340002" },
+    s7: { selection: "mecPermitted", otherDetails: "", evaluationRef: "Employee Contributions Processing Evaluation (TP 36), IPS 9C #12340003" }
+  }
+};
+
+/* ---------- minimal stored ZIP writer (no compression) + CRC-32 ---------- */
+var EADM_CRC_TABLE = (function(){ var t = [], c, i, k; for(i = 0; i < 256; i++){ c = i; for(k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1); t[i] = c >>> 0; } return t; })();
+function eadmCrc32(bytes){ var c = 0xFFFFFFFF, i; for(i = 0; i < bytes.length; i++) c = EADM_CRC_TABLE[(c ^ bytes[i]) & 0xFF] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
+function eadmU16(n){ return [n & 0xFF, (n >> 8) & 0xFF]; }
+function eadmU32(n){ return [n & 0xFF, (n >> 8) & 0xFF, (n >> 16) & 0xFF, (n >> 24) & 0xFF]; }
+function eadmUtf8Bytes(s){
+  var bytes = [], i, c;
+  for(i = 0; i < s.length; i++){
+    c = s.charCodeAt(i);
+    if(c < 128) bytes.push(c);
+    else if(c < 2048) bytes.push(0xC0 | (c >> 6), 0x80 | (c & 63));
+    else if(c >= 0xD800 && c < 0xDC00 && i + 1 < s.length && s.charCodeAt(i + 1) >= 0xDC00 && s.charCodeAt(i + 1) < 0xE000){
+      var cp = 0x10000 + ((c - 0xD800) << 10) + (s.charCodeAt(i + 1) - 0xDC00);
+      bytes.push(0xF0 | (cp >> 18), 0x80 | ((cp >> 12) & 63), 0x80 | ((cp >> 6) & 63), 0x80 | (cp & 63));
+      i++;
+    } else bytes.push(0xE0 | (c >> 12), 0x80 | ((c >> 6) & 63), 0x80 | (c & 63));
+  }
+  return bytes;
+}
+function eadmBuildZip(files){
+  var out = [], central = [], offset = 0, i, f;
+  var dosTime = 0, dosDate = 0x21; /* fixed date: 1980-01-01, deterministic bytes */
+  for(i = 0; i < files.length; i++){
+    f = files[i];
+    var name = eadmUtf8Bytes(f.name), data = (typeof f.data === "string") ? eadmUtf8Bytes(f.data) : f.data, crc = eadmCrc32(data);
+    out.push.apply(out, [0x50, 0x4B, 0x03, 0x04].concat(eadmU16(20), eadmU16(0), eadmU16(0), eadmU16(dosTime), eadmU16(dosDate), eadmU32(crc), eadmU32(data.length), eadmU32(data.length), eadmU16(name.length), eadmU16(0)));
+    out.push.apply(out, name);
+    out.push.apply(out, data);
+    central.push({ name: name, crc: crc, size: data.length, offset: offset });
+    offset += 30 + name.length + data.length;
+  }
+  var centralStart = offset, centralSize = 0;
+  central.forEach(function(c){
+    var a = [0x50, 0x4B, 0x01, 0x02].concat(eadmU16(20), eadmU16(20), eadmU16(0), eadmU16(0), eadmU16(dosTime), eadmU16(dosDate), eadmU32(c.crc), eadmU32(c.size), eadmU32(c.size), eadmU16(c.name.length), eadmU16(0), eadmU16(0), eadmU16(0), eadmU16(0), eadmU32(0), eadmU32(c.offset));
+    out.push.apply(out, a); out.push.apply(out, c.name); centralSize += a.length + c.name.length;
+  });
+  var end = [];
+  end.push.apply(end, [0x50, 0x4B, 0x05, 0x06].concat(eadmU16(0), eadmU16(0), eadmU16(files.length), eadmU16(files.length), eadmU32(centralSize), eadmU32(centralStart), eadmU16(0)));
+  out.push.apply(out, end);
+  return new Uint8Array(out);
+}
+
+/* ---------- docx XML ---------- */
+function eadmXmlPara(text, opts){
+  opts = opts || {};
+  var rPr = (opts.bold ? "<w:b/>" : "") + (opts.italic ? "<w:i/>" : "") + (opts.size ? '<w:sz w:val="' + opts.size + '"/>' : "");
+  var pPr = opts.style ? '<w:pPr><w:pStyle w:val="' + opts.style + '"/></w:pPr>' : "";
+  return '<w:p>' + pPr + '<w:r><w:rPr>' + rPr + '</w:rPr><w:t xml:space="preserve">' + eadmEscXml(text) + '</w:t></w:r></w:p>';
+}
+function eadmXmlSectionHead(title){
+  /* 1x1 table, width 9360 dxa, light-gray shading E6E6E6, bold text — the template's section heads. */
+  return '<w:tbl><w:tblPr><w:tblW w:w="9360" w:type="dxa"/><w:tblLook w:val="01E0" w:firstRow="1" w:lastRow="1" w:firstColumn="1" w:lastColumn="1" w:noHBand="0" w:noVBand="0"/></w:tblPr><w:tblGrid><w:gridCol w:w="9360"/></w:tblGrid><w:tr><w:trPr><w:trHeight w:val="282"/></w:trPr><w:tc><w:tcPr><w:tcW w:w="9360" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="E6E6E6"/></w:tcPr>' + eadmXmlPara(title, { bold: true }) + '</w:tc></w:tr></w:tbl>';
+}
+function eadmXmlCell(text, bold){
+  return '<w:tc><w:tcPr><w:tcW w:w="0" w:type="auto"/></w:tcPr>' + eadmXmlPara(text, { bold: bold }) + '</w:tc>';
+}
+function eadmXmlTable(rows, widths){
+  var cols = rows.length ? rows[0].length : 0;
+  var w = widths || [];
+  var total = 0, gi;
+  for(gi = 0; gi < cols; gi++) total += (w[gi] || 1440);
+  var grid = '<w:tblGrid>';
+  for(gi = 0; gi < cols; gi++) grid += '<w:gridCol w:w="' + (w[gi] || 1440) + '"/>';
+  grid += '</w:tblGrid>';
+  var s = '<w:tbl><w:tblPr><w:tblStyle w:val="TableGrid"/><w:tblW w:w="' + total + '" w:type="dxa"/></w:tblPr>' + grid;
+  rows.forEach(function(row, ri){
+    s += '<w:tr>';
+    row.forEach(function(cell){ s += eadmXmlCell(cell, ri === 0); });
+    s += '</w:tr>';
+  });
+  return s + '</w:tbl>';
+}
+function eadmCheck(ans){ return ans === "yes" ? "[X] Yes  [ ] No" : "[ ] Yes  [X] No"; }
+function eadmDocxFilename(c){
+  var cn = (c && c.caseNumber) ? String(c.caseNumber).replace(/[^0-9A-Za-z]/g, "") : "";
+  return cn ? cn + "EAdm.docx" : "EAdm.docx";
+}
+function eadmBuildDocumentXml(d){
+  var c = d.caseData, s = d.sections;
+  var x = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><w:body>';
+  x += eadmXmlPara("MEMORANDUM", { bold: true });
+  x += eadmXmlPara("");
+  x += eadmXmlPara("TO: " + (c.toEbls || "") + ", Employee Benefits Law Specialist, CSD/[branch]");
+  if(c.toFieldOffice) x += eadmXmlPara("      " + c.toFieldOffice);
+  x += eadmXmlPara("");
+  var fromSec = (c.fromSection || "").replace(/^ASD\//i, "");
+  var fromLine = "FROM: " + (c.fromActuary || "") + ", Actuary, ASD/" + fromSec;
+  x += eadmXmlPara(fromLine);
+  if(c.fromContractActuary) x += eadmXmlPara("      " + c.fromContractActuary + ", Contract Actuary, " + (c.fromFirm || "[Actuarial Firm]") + " (if applicable)");
+  x += eadmXmlPara("");
+  x += eadmXmlPara("CC: " + (c.ccSupervisor || "") + ", Employee Benefits Supervisor, CSD/[branch]");
+  x += eadmXmlPara("");
+  x += eadmXmlPara("DATE: " + eadmFmtMDY(c.memoDate));
+  x += eadmXmlPara("");
+  x += eadmXmlPara("SUBJECT: Estimated Benefits Administration Analysis");
+  x += eadmXmlPara("PBGC Case Number: " + (c.caseNumber || ""));
+  x += eadmXmlPara("Plan Name: " + (c.planName || ""));
+  x += eadmXmlPara("Bankruptcy Petition Date (BPD): " + eadmFmtMDY(c.bpd));
+  x += eadmXmlPara("Date of Plan Termination (DOPT): " + eadmFmtMDY(c.dopt));
+  x += eadmXmlPara("Date of Trusteeship (DOTR): " + eadmFmtMDY(c.dotr));
+  x += eadmXmlPara("");
+  x += eadmXmlPara("Purpose: " + EADM_PURPOSE);
+  x += eadmXmlPara("");
+  /* §1 */
+  x += eadmXmlSectionHead(EADM_SECTIONS[0].title);
+  x += eadmXmlPara("Reference:");
+  EADM_SECTIONS[0].refs.forEach(function(r){ x += eadmXmlPara(r, { style: "ListParagraph" }); });
+  EADM_S1_RULE.forEach(function(p){ x += eadmXmlPara(p); });
+  x += eadmXmlPara(EADM_S1_Q);
+  x += eadmXmlPara((s.s1.answer === "yes" ? "[X] " : "[ ] ") + EADM_S1_YES);
+  x += eadmXmlPara((s.s1.answer === "no" ? "[X] " : "[ ] ") + "No");
+  x += eadmXmlPara(s.s1.facts || "");
+  if(s.s1.answer === "yes" && s.s1.participants && s.s1.participants.length){
+    var r1 = [["Ref", "RBD", "Status", "Note"]];
+    s.s1.participants.forEach(function(p){ r1.push([p.ref || "", eadmFmtMDY(p.rbd), p.status === "past" ? "Past RBD" : "Within 180 days of RBD", p.note || ""]); });
+    x += eadmXmlTable(r1, [1080, 1440, 2160, 4680]);
+  }
+  x += eadmXmlPara("");
+  /* §2 */
+  x += eadmXmlSectionHead(EADM_SECTIONS[1].title);
+  x += eadmXmlPara("Reference:");
+  EADM_SECTIONS[1].refs.forEach(function(r){ x += eadmXmlPara(r); });
+  EADM_S2_RULE.forEach(function(p){ x += eadmXmlPara(p); });
+  EADM_S2_QS.forEach(function(q){ x += eadmXmlPara(q.q + " " + eadmCheck(s.s2[q.id])); });
+  x += eadmXmlPara("Recommended Action:");
+  x += eadmXmlPara(EADM_S2_ACTION);
+  x += eadmXmlPara(s.s2.eprdLanguage || "");
+  x += eadmXmlPara("");
+  /* §3 */
+  x += eadmXmlSectionHead(EADM_SECTIONS[2].title);
+  x += eadmXmlPara("References:");
+  EADM_SECTIONS[2].refs.forEach(function(r){ x += eadmXmlPara(r); });
+  x += eadmXmlPara(EADM_S3_RULE);
+  x += eadmXmlPara(EADM_S3_Q);
+  x += eadmXmlPara((s.s3.answer === "yes" ? "[X] " : "[ ] ") + EADM_S3_YES);
+  x += eadmXmlPara((s.s3.answer === "no" ? "[X] " : "[ ] ") + "No");
+  x += eadmXmlPara(s.s3.facts || "");
+  if(s.s3.answer === "yes" && s.s3.qpsas && s.s3.qpsas.length){
+    var r3 = [["Ref", "Death date", "EPRD", "Retroactive to", "Note"]];
+    s.s3.qpsas.forEach(function(q){ r3.push([q.ref || "", eadmFmtMDY(q.deathDate), eadmFmtMDY(q.eprd), eadmFmtMDY(q.retroactiveTo), q.note || ""]); });
+    x += eadmXmlTable(r3, [1080, 1440, 1440, 1440, 3960]);
+  }
+  x += eadmXmlPara("");
+  /* §4 */
+  x += eadmXmlSectionHead(EADM_SECTIONS[3].title);
+  x += eadmXmlPara(EADM_S4_Q);
+  x += eadmXmlPara((s.s4.answer === "yes" ? "[X] " : "[ ] ") + EADM_S4_YES);
+  x += eadmXmlPara((s.s4.answer === "no" ? "[X] " : "[ ] ") + "No");
+  x += eadmXmlPara(s.s4.facts || "");
+  if(s.s4.answer === "yes" && s.s4.earlierSets && s.s4.earlierSets.length){
+    var r4 = [["Era", "Effective dates", "Description", "IPS location"]];
+    s.s4.earlierSets.forEach(function(f){ r4.push([f.era || "", f.effectiveDates || "", f.description || "", f.ipsLocation || ""]); });
+    x += eadmXmlTable(r4, [1440, 1800, 4320, 1800]);
+  }
+  x += eadmXmlPara("");
+  /* §5 */
+  x += eadmXmlSectionHead(EADM_SECTIONS[4].title);
+  x += eadmXmlPara(EADM_S5_EXAMPLE);
+  x += eadmXmlPara(EADM_S5_Q + " " + eadmCheck(s.s5.answer));
+  if(s.s5.answer === "yes"){
+    x += eadmXmlPara(EADM_S5_DESCRIBE);
+    x += eadmXmlPara(s.s5.guidance || "");
+  }
+  x += eadmXmlPara(s.s5.facts || "");
+  x += eadmXmlPara("");
+  /* §6 */
+  x += eadmXmlSectionHead(EADM_SECTIONS[5].title);
+  x += eadmXmlPara("Reference:");
+  EADM_SECTIONS[5].refs.forEach(function(r){ x += eadmXmlPara(r, { style: "ListParagraph" }); });
+  x += eadmXmlPara(EADM_S6_RULE);
+  x += eadmXmlPara(EADM_S6_Q + " " + eadmCheck(s.s6.answer));
+  if(s.s6.answer === "yes"){
+    x += eadmXmlPara(EADM_S6_YES);
+    x += eadmXmlPara(s.s6.summaryRef || "");
+  }
+  x += eadmXmlPara("");
+  /* §7 */
+  x += eadmXmlSectionHead(EADM_SECTIONS[6].title);
+  EADM_S7_GUIDANCE.forEach(function(p){ x += eadmXmlPara(p); });
+  var sel = s.s7.selection;
+  var stmt = EADM_S7_STATEMENTS[sel] || "";
+  if(sel === "other") stmt += (s.s7.otherDetails || "");
+  x += eadmXmlPara(stmt);
+  if((sel === "mecPermitted" || sel === "mecNotPermitted") && s.s7.evaluationRef) x += eadmXmlPara("Employee Contributions Processing Evaluation: " + s.s7.evaluationRef);
+  if(sel === "vec" && s.s7.evaluationRef) x += eadmXmlPara("Guidance: " + s.s7.evaluationRef);
+  x += '<w:sectPr><w:footerReference w:type="default" r:id="rId1"/><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440" w:header="288" w:footer="288" w:gutter="0"/><w:cols w:space="720"/></w:sectPr>';
+  x += '</w:body></w:document>';
+  return x;
+}
+var EADM_CONTENT_TYPES = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/><Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/></Types>';
+var EADM_RELS = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>';
+var EADM_DOC_RELS = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer1.xml"/></Relationships>';
+var EADM_STYLES = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="Times New Roman" w:cs="Times New Roman"/><w:lang w:val="en-US"/></w:rPr></w:rPrDefault><w:pPrDefault/></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="ListParagraph"><w:name w:val="List Paragraph"/><w:basedOn w:val="Normal"/><w:qFormat/><w:pPr><w:ind w:left="720"/></w:pPr></w:style><w:style w:type="paragraph" w:customStyle="1" w:styleId="listnote"><w:name w:val="listnote"/><w:basedOn w:val="Normal"/><w:pPr><w:spacing w:before="68" w:after="68"/><w:ind w:left="68" w:right="68"/></w:pPr><w:rPr><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Footer"><w:name w:val="footer"/><w:basedOn w:val="Normal"/><w:pPr><w:tabs><w:tab w:val="center" w:pos="4320"/><w:tab w:val="right" w:pos="8640"/></w:tabs></w:pPr></w:style><w:style w:type="table" w:default="1" w:styleId="TableGrid"><w:name w:val="Table Grid"/><w:basedOn w:val="TableNormal"/><w:tblPr><w:tblBorders><w:top w:val="single" w:sz="4" w:space="0" w:color="auto"/><w:left w:val="single" w:sz="4" w:space="0" w:color="auto"/><w:bottom w:val="single" w:sz="4" w:space="0" w:color="auto"/><w:right w:val="single" w:sz="4" w:space="0" w:color="auto"/><w:insideH w:val="single" w:sz="4" w:space="0" w:color="auto"/><w:insideV w:val="single" w:sz="4" w:space="0" w:color="auto"/></w:tblBorders></w:tblPr></w:style></w:styles>';
+var EADM_FOOTER = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:ftr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:p><w:pPr><w:pStyle w:val="Footer"/><w:tabs><w:tab w:val="clear" w:pos="8640"/><w:tab w:val="right" w:pos="9360"/></w:tabs><w:rPr><w:sz w:val="16"/><w:szCs w:val="16"/></w:rPr></w:pPr><w:r><w:rPr><w:sz w:val="16"/><w:szCs w:val="16"/></w:rPr><w:t>Estimated Benefits Administration Analysis Memo</w:t></w:r><w:r><w:rPr><w:sz w:val="16"/><w:szCs w:val="16"/></w:rPr><w:tab/></w:r><w:r><w:rPr><w:sz w:val="16"/><w:szCs w:val="16"/></w:rPr><w:tab/></w:r><w:r><w:rPr><w:sz w:val="16"/><w:szCs w:val="16"/></w:rPr><w:fldChar w:fldCharType="begin"/></w:r><w:r><w:rPr><w:sz w:val="16"/><w:szCs w:val="16"/></w:rPr><w:instrText xml:space="preserve"> PAGE \\* MERGEFORMAT </w:instrText></w:r><w:r><w:rPr><w:sz w:val="16"/><w:szCs w:val="16"/></w:rPr><w:fldChar w:fldCharType="separate"/></w:r><w:r><w:rPr><w:noProof/><w:sz w:val="16"/><w:szCs w:val="16"/></w:rPr><w:t>1</w:t></w:r><w:r><w:rPr><w:sz w:val="16"/><w:szCs w:val="16"/></w:rPr><w:fldChar w:fldCharType="end"/></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Footer"/><w:rPr><w:sz w:val="16"/><w:szCs w:val="16"/></w:rPr></w:pPr><w:r><w:rPr><w:sz w:val="16"/><w:szCs w:val="16"/></w:rPr><w:t>Version of 09/18/2020</w:t></w:r></w:p></w:ftr>';
+function eadmBuildDocxBytes(d){
+  var doc = eadmBuildDocumentXml(d);
+  return eadmBuildZip([
+    { name: "[Content_Types].xml", data: EADM_CONTENT_TYPES },
+    { name: "_rels/.rels", data: EADM_RELS },
+    { name: "word/_rels/document.xml.rels", data: EADM_DOC_RELS },
+    { name: "word/document.xml", data: doc },
+    { name: "word/styles.xml", data: EADM_STYLES },
+    { name: "word/footer1.xml", data: EADM_FOOTER }
+  ]);
+}
+
+/* ---------- UI ---------- */
+function eadmShowStep(n){
+  EADM_STATE.step = n;
+  for(var i = 1; i <= 5; i++){
+    var el = eadmEl("step-" + i);
+    if(el) el.hidden = (i !== n);
+  }
+  var items = document.querySelectorAll("#stepper li");
+  items.forEach(function(li){
+    var sn = parseInt(li.getAttribute("data-step"), 10);
+    li.classList.toggle("current", sn === n);
+    li.classList.toggle("done", sn < n);
+  });
+  var b4 = eadmEl("btn-to-step-4"), b5 = eadmEl("btn-to-step-5");
+  if(b4) b4.disabled = !EADM_STATE.validated;
+  if(b5) b5.disabled = !eadmAllApproved();
+}
+function eadmShowView(name){
+  ["eadm", "welcome", "help"].forEach(function(v){
+    var el = eadmEl("view-" + v);
+    if(el) el.hidden = (v !== name);
+  });
+  document.querySelectorAll(".nav-link").forEach(function(a){
+    if(a.getAttribute("data-view") === name) a.setAttribute("aria-current", "page");
+    else a.removeAttribute("aria-current");
+  });
+  var views = eadmEl("views");
+  if(views) views.classList.remove("open");
+  var mt = eadmEl("menu-toggle");
+  if(mt) mt.setAttribute("aria-expanded", "false");
+}
+function eadmReadCaseForm(){
+  var g = function(id){ var el = eadmEl(id); return el ? el.value.trim() : ""; };
+  EADM_STATE.caseData = {
+    toEbls: g("f-toEbls"), toFieldOffice: g("f-toFieldOffice"),
+    fromActuary: g("f-fromActuary"), fromSection: g("f-fromSection"),
+    fromContractActuary: g("f-fromContract"), fromFirm: g("f-fromFirm"),
+    ccSupervisor: g("f-ccSupervisor"), memoDate: g("f-memoDate"),
+    caseNumber: g("f-caseNumber"), planName: g("f-planName"),
+    bpd: g("f-bpd"), dopt: g("f-dopt"), dotr: g("f-dotr")
+  };
+  return EADM_STATE.caseData;
+}
+function eadmFillCaseForm(c){
+  var s = function(id, v){ var el = eadmEl(id); if(el) el.value = v || ""; };
+  s("f-toEbls", c.toEbls); s("f-toFieldOffice", c.toFieldOffice);
+  s("f-fromActuary", c.fromActuary); s("f-fromSection", c.fromSection);
+  s("f-fromContract", c.fromContractActuary); s("f-fromFirm", c.fromFirm);
+  s("f-ccSupervisor", c.ccSupervisor); s("f-memoDate", c.memoDate);
+  s("f-caseNumber", c.caseNumber); s("f-planName", c.planName);
+  s("f-bpd", c.bpd); s("f-dopt", c.dopt); s("f-dotr", c.dotr);
+}
+function eadmEscHtml(s){
+  return String(s === null || s === undefined ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+function eadmValidateJson(){
+  var raw = eadmEl("json-input").value;
+  var box = eadmEl("json-status"), errBox = eadmEl("upload-errors");
+  var data;
+  try { data = JSON.parse(raw); }
+  catch (e) { box.innerHTML = '<div class="alert">Not valid JSON: ' + eadmEscHtml(e.message) + '</div>'; errBox.innerHTML = ""; EADM_STATE.validated = false; eadmShowStep(3); return false; }
+  var res = eadmValidate(data);
+  if(!res.ok){
+    box.innerHTML = '<div class="alert"><b>Not valid.</b><ul>' + res.errors.map(function(e){ return "<li>" + eadmEscHtml(e) + "</li>"; }).join("") + '</ul></div>';
+    errBox.innerHTML = "";
+    EADM_STATE.validated = false; eadmShowStep(3); return false;
+  }
+  EADM_STATE.sections = data.sections;
+  EADM_STATE.caseData = data.caseData || EADM_STATE.caseData;
+  eadmFillCaseForm(EADM_STATE.caseData);
+  EADM_STATE.validated = true;
+  EADM_STATE.approved = {};
+  var warn = res.warnings.length ? '<div class="warn"><b>Notes.</b><ul>' + res.warnings.map(function(w){ return "<li>" + eadmEscHtml(w) + "</li>"; }).join("") + '</ul></div>' : "";
+  box.innerHTML = warn + '<div class="ok">Valid. All 7 sections present.</div>';
+  errBox.innerHTML = "";
+  eadmAudit("JSON validated: case " + (EADM_STATE.caseData.caseNumber || "?") + ", " + res.warnings.length + " warning(s).");
+  eadmShowStep(3);
+  return true;
+}
+function eadmSectionSummary(id){
+  var s = EADM_STATE.sections[id];
+  if(!s) return "";
+  if(id === "s1" || id === "s3" || id === "s4" || id === "s5" || id === "s6"){
+    return '<p>Answer: <span class="badge ' + (s.answer === "yes" ? "yes" : "no") + '">' + (s.answer === "yes" ? "Yes" : "No") + '</span></p><p>' + eadmEscHtml(s.facts || "") + '</p>';
+  }
+  if(id === "s2"){
+    var h = "";
+    EADM_S2_QS.forEach(function(q){ h += "<p>" + eadmEscHtml(q.q) + " <b>" + (s[q.id] === "yes" ? "Yes" : "No") + "</b></p>"; });
+    h += "<p><b>EPRD language:</b> " + eadmEscHtml(s.eprdLanguage || "") + "</p>";
+    return h;
+  }
+  if(id === "s7"){
+    var label = { none: "N/A — no employee contributions", mecPermitted: "MEC — AMEC may be withdrawn in a single sum", mecNotPermitted: "MEC — AMEC may not be withdrawn in a single sum", vec: "VEC", other: "Other" }[s.selection] || s.selection;
+    var h2 = "<p><b>" + eadmEscHtml(label) + "</b></p>";
+    if(s.evaluationRef) h2 += "<p>Evaluation: " + eadmEscHtml(s.evaluationRef) + "</p>";
+    if(s.otherDetails) h2 += "<p>Other details: " + eadmEscHtml(s.otherDetails) + "</p>";
+    return h2;
+  }
+  return "";
+}
+function eadmRenderReview(){
+  var s = EADM_STATE.sections;
+  if(!s){ eadmEl("review-box").innerHTML = '<div class="alert">No validated JSON yet. Go back to Step 3.</div>'; return; }
+  var h = "";
+  EADM_SECTIONS.forEach(function(sec, i){
+    var n = i + 1, id = sec.id;
+    h += '<div class="card"><h3>§' + n + ' — ' + eadmEscHtml(sec.title.replace(/^\d+\.\s*/, "")) + '</h3>';
+    h += eadmSectionSummary(id);
+    if(id === "s1" && s.s1.answer === "yes" && s.s1.participants && s.s1.participants.length){
+      h += '<table><tr><th>Ref</th><th>RBD</th><th>Status</th><th>Note</th></tr>';
+      s.s1.participants.forEach(function(p){ h += "<tr><td>" + eadmEscHtml(p.ref) + "</td><td>" + eadmEscHtml(p.rbd) + "</td><td>" + (p.status === "past" ? "Past RBD" : "Within 180 days") + "</td><td>" + eadmEscHtml(p.note || "") + "</td></tr>"; });
+      h += "</table>";
+    }
+    if(id === "s3" && s.s3.answer === "yes" && s.s3.qpsas && s.s3.qpsas.length){
+      h += '<table><tr><th>Ref</th><th>Death date</th><th>EPRD</th><th>Retroactive to</th><th>Note</th></tr>';
+      s.s3.qpsas.forEach(function(q){ h += "<tr><td>" + eadmEscHtml(q.ref) + "</td><td>" + eadmEscHtml(q.deathDate || "") + "</td><td>" + eadmEscHtml(q.eprd || "") + "</td><td>" + eadmEscHtml(q.retroactiveTo || "") + "</td><td>" + eadmEscHtml(q.note || "") + "</td></tr>"; });
+      h += "</table>";
+    }
+    if(id === "s4" && s.s4.answer === "yes" && s.s4.earlierSets && s.s4.earlierSets.length){
+      h += '<table><tr><th>Era</th><th>Effective dates</th><th>Description</th><th>IPS location</th></tr>';
+      s.s4.earlierSets.forEach(function(f){ h += "<tr><td>" + eadmEscHtml(f.era) + "</td><td>" + eadmEscHtml(f.effectiveDates) + "</td><td>" + eadmEscHtml(f.description) + "</td><td>" + eadmEscHtml(f.ipsLocation) + "</td></tr>"; });
+      h += "</table>";
+    }
+    if(id === "s6" && s.s6.answer === "yes") h += "<p>Summary: " + eadmEscHtml(s.s6.summaryRef || "") + "</p>";
+    var ap = EADM_STATE.approved[id] ? " checked" : "";
+    h += '<p><label><input type="checkbox" data-approve="' + id + '"' + ap + '> Approve §' + n + '</label></p></div>';
+  });
+  h += '<p class="small">Note: §2 keeps the template\u2019s spelling “ERPD” in the generated memo (template typo, kept as written).</p>';
+  eadmEl("review-box").innerHTML = h;
+}
+function eadmAllApproved(){
+  if(!EADM_STATE.sections) return false;
+  return EADM_SECTIONS.every(function(sec){ return !!EADM_STATE.approved[sec.id]; });
+}
+function eadmRenderDownload(){
+  var c = EADM_STATE.caseData || {};
+  var name = eadmDocxFilename(c);
+  var h = "<h2>Step 5 — Download</h2>";
+  h += '<p>File: <b>' + eadmEscHtml(name) + '</b></p>';
+  h += '<p><button type="button" class="primary" data-action="generate-docx">Generate the memo</button></p>';
+  h += '<p><button type="button" class="secondary" data-action="download-docx" disabled>Download the .docx</button> ';
+  h += '<button type="button" class="secondary" data-action="download-inputs">Download inputs JSON</button> ';
+  h += '<button type="button" class="secondary" data-action="download-audit">Download audit log</button> ';
+  h += '<button type="button" class="danger" data-action="start-over">Start over</button></p>';
+  h += '<p class="small">On iPhone, the file lands in Files → Downloads. If you cannot find it, use the Share button when it appears.</p>';
+  eadmEl("download-box").innerHTML = h;
+}
+function eadmDownloadBlob(blob, name){
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  a.href = url; a.download = name; document.body.appendChild(a); a.click();
+  setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
+}
+function eadmGenerate(){
+  var d = { caseData: EADM_STATE.caseData, sections: EADM_STATE.sections };
+  var bytes = eadmBuildDocxBytes(d);
+  var name = eadmDocxFilename(d.caseData);
+  var blob = new Blob([bytes], { type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
+  EADM_STATE.generated = { blob: blob, name: name };
+  eadmAudit("Memo generated: " + name + " (" + bytes.length + " bytes).");
+  var btn = document.querySelector('[data-action="download-docx"]');
+  if(btn) btn.disabled = false;
+  var box = eadmEl("download-box");
+  if(box){
+    var ok = document.createElement("div");
+    ok.className = "ok"; ok.textContent = "Generated: " + name + ".";
+    box.appendChild(ok);
+  }
+}
+function eadmLoadDemo(){
+  var demo = JSON.parse(JSON.stringify(EADM_DEMO_JSON));
+  EADM_STATE.caseData = demo.caseData;
+  EADM_STATE.sections = demo.sections;
+  EADM_STATE.validated = true;
+  EADM_STATE.approved = {};
+  eadmFillCaseForm(demo.caseData);
+  var ta = eadmEl("json-input");
+  if(ta) ta.value = JSON.stringify(demo, null, 2);
+  var box = eadmEl("json-status");
+  if(box) box.innerHTML = '<div class="ok">Demo loaded (synthetic plan, not a real case). All 7 sections present.</div>';
+  eadmAudit("Demo loaded.");
+  eadmRenderReview();
+  eadmShowStep(4);
+}
+function eadmInit(){
+  eadmApplyTheme(eadmLoadTheme());
+  var tt = eadmEl("theme-toggle");
+  if(tt) tt.addEventListener("click", eadmToggleTheme);
+  var mt = eadmEl("menu-toggle");
+  if(mt) mt.addEventListener("click", function(){
+    var v = eadmEl("views");
+    var open = v.classList.toggle("open");
+    mt.setAttribute("aria-expanded", open ? "true" : "false");
+  });
+  document.addEventListener("keydown", function(e){
+    if(e.key === "Escape"){
+      var v = eadmEl("views");
+      if(v && v.classList.contains("open")){
+        v.classList.remove("open");
+        var m = eadmEl("menu-toggle");
+        if(m){ m.setAttribute("aria-expanded", "false"); m.focus(); }
+      }
+    }
+  });
+  function route(){
+    var h = (window.location.hash || "#eadm").replace("#", "");
+    if(["eadm", "welcome", "help"].indexOf(h) < 0) h = "eadm";
+    eadmShowView(h);
+  }
+  window.addEventListener("hashchange", route);
+  route();
+  document.querySelectorAll("#stepper li").forEach(function(li){
+    li.addEventListener("click", function(){
+      var n = parseInt(li.getAttribute("data-step"), 10);
+      if(n === 4 && !EADM_STATE.validated) return;
+      if(n === 5 && !eadmAllApproved()) return;
+      if(n === 4) eadmRenderReview();
+      if(n === 5) eadmRenderDownload();
+      eadmShowStep(n);
+    });
+  });
+  document.addEventListener("click", function(e){
+    var t = e.target.closest("[data-action]");
+    if(!t) return;
+    var a = t.getAttribute("data-action");
+    if(a === "to-step-2"){ eadmReadCaseForm(); eadmAudit("Case header saved."); eadmShowStep(2); }
+    else if(a === "to-step-3"){ eadmShowStep(3); }
+    else if(a === "to-step-4"){ eadmRenderReview(); eadmShowStep(4); }
+    else if(a === "to-step-5"){ eadmRenderDownload(); eadmShowStep(5); }
+    else if(a === "download-prompt"){
+      eadmDownloadBlob(new Blob([EADM_SCRAPER_PROMPT], { type: "text/markdown" }), "eadm-scraper-prompt.md");
+      eadmAudit("Scraper prompt downloaded.");
+    }
+    else if(a === "validate-json"){ eadmValidateJson(); }
+    else if(a === "upload-json-file"){ var fi = eadmEl("json-file"); if(fi) fi.click(); }
+    else if(a === "load-demo"){ eadmLoadDemo(); }
+    else if(a === "try-demo"){ eadmLoadDemo(); eadmShowView("eadm"); }
+    else if(a === "generate-docx"){ eadmGenerate(); }
+    else if(a === "download-docx"){ if(EADM_STATE.generated) eadmDownloadBlob(EADM_STATE.generated.blob, EADM_STATE.generated.name); }
+    else if(a === "download-inputs"){
+      var d = { caseData: EADM_STATE.caseData, sections: EADM_STATE.sections };
+      eadmDownloadBlob(new Blob([JSON.stringify(d, null, 2)], { type: "application/json" }), "eadm-inputs.json");
+      eadmAudit("Inputs JSON downloaded.");
+    }
+    else if(a === "download-audit"){
+      eadmDownloadBlob(new Blob([EADM_STATE.audit.join("\n")], { type: "text/plain" }), "eadm-audit-log.txt");
+    }
+    else if(a === "start-over"){
+      /* Mutate in place: EADM.state holds a live reference to EADM_STATE. */
+      EADM_STATE.caseData = {}; EADM_STATE.sections = null; EADM_STATE.approved = {}; EADM_STATE.audit = []; EADM_STATE.step = 1; EADM_STATE.validated = false; EADM_STATE.generated = null;
+      var ta = eadmEl("json-input"); if(ta) ta.value = "";
+      var js = eadmEl("json-status"); if(js) js.innerHTML = "";
+      eadmFillCaseForm({});
+      eadmShowStep(1);
+    }
+  });
+  document.addEventListener("change", function(e){
+    var t = e.target;
+    if(t && t.getAttribute && t.getAttribute("data-approve")){
+      EADM_STATE.approved[t.getAttribute("data-approve")] = !!t.checked;
+      eadmAudit("Section " + t.getAttribute("data-approve") + (t.checked ? " approved." : " unapproved."));
+      var b5 = eadmEl("btn-to-step-5");
+      if(b5) b5.disabled = !eadmAllApproved();
+    }
+    if(t && t.id === "json-file" && t.files && t.files[0]){
+      var r = new FileReader();
+      r.onload = function(){
+        var ta = eadmEl("json-input");
+        if(ta) ta.value = String(r.result || "");
+        eadmValidateJson();
+      };
+      r.readAsText(t.files[0]);
+      t.value = "";
+    }
+  });
+  eadmShowStep(1);
+}
+
+/* ---------- export (tests load the script in a Node vm) ---------- */
+var EADM = {
+  VERSION: EADM_VERSION, SCHEMA_VERSION: EADM_SCHEMA_VERSION,
+  TEMPLATE_VERSION: EADM_TEMPLATE_VERSION,
+  SECTIONS: EADM_SECTIONS, S7_STATEMENTS: EADM_S7_STATEMENTS,
+  validate: eadmValidate, buildDocxBytes: eadmBuildDocxBytes,
+  buildDocumentXml: eadmBuildDocumentXml, docxFilename: eadmDocxFilename,
+  fmtMDY: eadmFmtMDY, isISO: eadmIsISO, escXml: eadmEscXml,
+  DEMO_JSON: EADM_DEMO_JSON, state: EADM_STATE,
+  get SCRAPER_PROMPT(){ return EADM_SCRAPER_PROMPT; }
+};
+if(typeof globalThis !== "undefined") globalThis.EADM = EADM;
+if(typeof document !== "undefined") eadmInit();
+</script>
+</body>
+</html>

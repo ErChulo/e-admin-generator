@@ -1,0 +1,1 @@
+{"description":"E.Adm Generator — Estimated Benefits Administration Analysis memo. Single HTML file deliverable (eadm-generator.html).","devDependencies":{"jsdom":"^27.4.0"},"name":"eadm-generator","private":true,"scripts":{"build":"python3 scripts/build_single_file.py","test":"node tests/run.cjs && node tests/browser.cjs && python3 scripts/verify_docx.py"},"version":"0.1.0"}

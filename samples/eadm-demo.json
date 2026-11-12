@@ -1,0 +1,75 @@
+{
+  "caseData": {
+    "toEbls": "A. Example",
+    "toFieldOffice": "Washington Field Office, Washington, DC",
+    "fromActuary": "J. Sample",
+    "fromSection": "D",
+    "fromContractActuary": "",
+    "fromFirm": "",
+    "ccSupervisor": "M. Reviewer",
+    "memoDate": "2026-11-11",
+    "caseNumber": "12345678",
+    "planName": "Harborview Manufacturing Pension Plan",
+    "bpd": "",
+    "dopt": "2024-06-30",
+    "dotr": "2024-09-15"
+  },
+  "sections": {
+    "s1": {
+      "answer": "yes",
+      "facts": "Two participants past or within 180 days of RBD and not yet in pay. Applications to be sent per TP 20.2.",
+      "participants": [
+        {
+          "ref": "P-001",
+          "rbd": "2025-04-01",
+          "status": "past",
+          "note": "Past RBD, not yet in pay."
+        },
+        {
+          "ref": "P-002",
+          "rbd": "2026-04-01",
+          "status": "within180",
+          "note": "Within 180 days of RBD."
+        }
+      ]
+    },
+    "s2": {
+      "lumpSums": "no",
+      "annuitiesBefore55": "yes",
+      "earlyUnreduced": "no",
+      "windowPeriods": "no",
+      "eprdLanguage": "The earliest PBGC retirement date is the participant’s earliest annuity date where that date is on or after age 55; otherwise age 55, unless the facts-and-circumstances test supports an earlier date."
+    },
+    "s3": {
+      "answer": "no",
+      "facts": "No beneficiaries entitled to retroactive QPSAs. No participant died before DOPT with an unnotified spouse.",
+      "qpsas": []
+    },
+    "s4": {
+      "answer": "yes",
+      "facts": "The 1979 plan provided different early retirement factors than the DOPT document.",
+      "earlierSets": [
+        {
+          "era": "1979 plan",
+          "effectiveDates": "1979-01-01 to 2010-12-31",
+          "description": "ERF 1/180 per month first 60 months, then 1/360; DOPT document uses 1/15 per year.",
+          "ipsLocation": "IPS 9C #12340001"
+        }
+      ]
+    },
+    "s5": {
+      "answer": "no",
+      "facts": "No restriction on benefits payable while receiving benefits from another source was found in the plan documents.",
+      "guidance": ""
+    },
+    "s6": {
+      "answer": "yes",
+      "summaryRef": "Earnings Offsets Summary, IPS 9C #12340002"
+    },
+    "s7": {
+      "selection": "mecPermitted",
+      "otherDetails": "",
+      "evaluationRef": "Employee Contributions Processing Evaluation (TP 36), IPS 9C #12340003"
+    }
+  }
+}
